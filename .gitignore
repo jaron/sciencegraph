@@ -1,0 +1,12 @@
+/bin
+/tmp
+/data
+/target
+/private
+sciencegraph.db/
+.DS_Store
+.project
+.Rhistory
+.idea
+.classpath
+*.iml
