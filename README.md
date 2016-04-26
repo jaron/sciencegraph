@@ -27,8 +27,8 @@ to 11 and 15 year-olds. Instructions for running the question answering code are
 * In the web interface, try running a sample Cypher query like `start n=node(*) match n return count(n)` - if everything is working you should see a number that's greater than 1300000
 * Now, build the java project using `mvn package`
 * You can now try using the database to answer a single question chosen at random using `java -cp target/sciencegraph-1.0-jar-with-dependencies.jar com.agentsmith.sciencegraph.App -once`
-* Use the same command without the `-once` parameter to create answers for all the questions, this might take about 5-10 minutes
-* The question answering logic is still a work in progress, so don't be surprised if it produces the wrong answer. But like Asimov said, wrong answers can provide the beginnings of great insights. Have a look at the console output, and see if you can identify why the system got it wrong.
+* Use the same command without the `-once` parameter to create answers for all the questions in the set, this might take about 5-10 minutes
+* The question answering logic is still a work in progress, so don't be surprised if it produces the wrong answer. But like Asimov said, wrong answers can provide the beginnings of great insights. You might like to look at the console output, and see if you can identify why the system got it wrong.
 
 
 ##### Sample Queries

@@ -1,0 +1,99 @@
+// return a node
+match (n:Concept {name : "/c/en/planet"}) return n
+
+// find shortest path between two concepts
+MATCH (to:Concept { name:"/c/en/water" }), (from:Concept { name:"/c/en/protein" }),  p = AllShortestPaths(from-[*..10]-to) return p
+
+match n where n.cid=x return n;
+
+// match nodes by substring
+MATCH (n) where n.name =~ '/c/en/be_.*' return n limit 10;
+
+// return a relationship
+start r=rel(x) return r
+
+// return two nodes
+start n=node(*) match n,b where n.cid=id1 and b.cid=id2 return n,b
+
+// find the degree (number of connections) of a node
+MATCH (n) where n.cid=XXXX
+RETURN n, size((n)--()) as degree
+
+// show 10 nodes who have no relationships
+MATCH (node) WHERE NOT (node)-[]-() RETURN node.name LIMIT 10;
+
+// return 10 nodes with the most relationships
+START n=node(*)
+MATCH (n)-[r]->(x)
+RETURN n, COUNT(r)
+ORDER BY COUNT(r) DESC
+LIMIT 10
+
+// count how many nodes have a single relationship
+MATCH ()-[r]->(n)
+WITH n, count(r) as rel_cnt
+WHERE rel_cnt = 1
+RETURN count(n);
+
+// count all nodes
+start n=node(*) match n return count(n)
+
+// count all unconnected nodes
+MATCH (n) WHERE NOT n--() return count(n)
+
+
+// get shortest path between two nodes
+START
+  from=node:Concept(name="/c/en/water"),
+  to=node:Concept(name="/c/en/beer")
+MATCH
+  p = AllShortestPaths(from-[*..10]-to)
+return p;
+
+// directional shortest path
+MATCH (source:Concept { name:"/c/en/water" }), (dest:Concept { name:"/c/en/protein" }), p = shortestPath((source)-[r*]->(dest))
+where NONE( rel in r WHERE type(rel)="ANTONYM")
+RETURN p
+
+// delete a relationship type, e.g. ANTONYM
+match (:Concept)-[r:ANTONYM]->(:Concept) delete r;
+
+// display a node and its 1-degree connections
+MATCH (a:Concept { name:"/c/en/cow" }), ((a)-[r*..1]-(b)) RETURN a,b,r
+// where NONE( rel in r WHERE type(rel)="RELATED_TO")
+
+// to see 1 degree relations of a particular type
+match (n:Concept { name:"/c/en/sun" }), ((n)-[r:MADE_OF]-()) return n,r
+
+// to create a new node
+CREATE (n:Concept { name : '/c/en/SOMETHING' })
+
+// to create a new relationship
+MATCH (to:Concept { name: "/c/en/fossil_record" }), (from:Concept { name: "/c/en/paleoclimatology"})
+CREATE (to)-[:USED_FOR { weight: 1, reason: "[Fossil Record] is used for [Paleoclimatology]" }]->(from);
+
+// to delete a node and its relationships
+START n=node(5365)
+optional MATCH n-[r]-() delete r,n
+
+// delete a named node and its relationships
+match (n:Concept {name : "/c/en/505"}) optional MATCH n-[r]-() delete r,n
+
+// to set a new property
+match (n:Concept {name : "/c/en/milky_way"}) set n.definition="The Milky Way is the spiral galaxy that contains our Solar System." return n
+
+// to fetch a property
+match (n:Concept {name : "/c/en/mitosis"}) return n.definition
+
+// create a new relationship
+MATCH (to:Concept { name: "/c/en/a" }), (from:Concept { name: "/c/en/b"})
+CREATE (to)-[:CAPABLE_OF { weight: 1, reason: "A [] is capable of []" }]->(from);
+
+// set a definition
+match (n:Concept {name : "/c/en/something"}) set n.definition="some definition"
+
+MATCH (to:Concept { name: "/c/en/brain" }), (from:Concept { name: "/c/en/coordinate"})
+CREATE (to)-[:HAS_PROPERTY { name: "primary_function", weight: 1, reason: "A [Brain]'s' [Primary Function] is to [Coordinate]" }]->(from);
+
+MATCH (to:Concept { name: "/c/en/mitochondrion" }), (from:Concept { name: "/c/en/energy"})
+CREATE (to)-[:CAPABLE_OF { weight: 1, reason: "A [Mitochondrion] is capable of producing [Energy]" }]->(from);
