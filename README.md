@@ -2,8 +2,7 @@
 
 A comprehensive knowledge graph of scientific concepts, for question answering
 
-"The most exciting phrase to hear in science, the one that heralds new discoveries, is not 'Eureka!' but 'That's funny...'"
-_-- Isaac Asimov_
+
 
 
 ### Introduction
@@ -28,14 +27,36 @@ to 11 and 15 year-olds. Instructions for running the question answering code are
 * Now, build the java project using `mvn package`
 * You can now try using the database to answer a single question chosen at random using `java -cp target/sciencegraph-1.0-jar-with-dependencies.jar com.agentsmith.sciencegraph.App -once`
 * Use the same command without the `-once` parameter to create answers for all the questions in the set, this might take about 5-10 minutes
-* The question answering logic is still a work in progress, so don't be surprised if it produces the wrong answer. But like Asimov said, wrong answers can provide the beginnings of great insights. You might like to look at the console output, and see if you can identify why the system got it wrong.
 
 
 ##### How It Works
 
-. . .
+The basic stages of the current question answering process are as follows:
+
+* The plain text of a question is passed to the `ProblemSolver.solve()` method
+* A `Blackboard` instance is created, this will store intermediate results produced by the various stages of the comprehension pipeline
+* `GraphQueryService.identifyQuestionConcepts()` identifies concepts in the question that also have corresponding nodes in the knowledge graph, this filters out irrelevant words and concepts
+* `GraphQueryService.identifyAnswerConcepts()` is called next and does the same with each of the multiple choice answers
+* `QuestionClassifier.classify()` uses rules to determine the type of the question
+* Knowing the question type then allows the answering process to select a tailored strategy for that particular type
+* The default answering strategy is to determine the semantic closeness between each concept in the question and each concept in the answer, and compute the average shortest path between them.
+* The scoring system then evaluates the computed path lengths, to find the answer which is conceptually closest to the question
+* There is also some primitive weighting applied before the final answer is selected. This an area that I aim to improve by incorporating some machine learning
 
 
+
+##### When the answer is wrong
+
+"The most exciting phrase to hear in science, the one that heralds new discoveries, is not 'Eureka!' but 'That's funny...'"
+_-- Isaac Asimov_
+
+The question answering logic is still a work in progress, so don't be surprised if it produces the wrong answer. But like Asimov said, wrong answers can provide the beginnings of great insights. So you might like to look at the console output, and see if you can identify why the system got it wrong.
+
+
+
+
+
+___
 
 ##### Acknowledgements
 
