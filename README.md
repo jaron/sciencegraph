@@ -1,6 +1,6 @@
 # ScienceGraph
 
-A comprehensive knowledge graph of scientific concepts
+A comprehensive knowledge graph of scientific concepts, for question answering
 
 "The most exciting phrase to hear in science, the one that heralds new discoveries, is not 'Eureka!' but 'That's funny...'"
 _-- Isaac Asimov_
@@ -31,7 +31,7 @@ to 11 and 15 year-olds. Instructions for running the question answering code are
 * The question answering logic is still a work in progress, so don't be surprised if it produces the wrong answer. But like Asimov said, wrong answers can provide the beginnings of great insights. You might like to look at the console output, and see if you can identify why the system got it wrong.
 
 
-##### Sample Queries
+##### How It Works
 
 . . .
 
