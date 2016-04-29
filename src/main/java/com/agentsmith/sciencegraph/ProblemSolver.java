@@ -45,27 +45,9 @@ public class ProblemSolver
 		// STEP 2 - do the same for the answers
 		GraphQueryService.getInstance().identifyAnswerConcepts(blackboard);
 
-		// Quality control - to ensure we have sufficent
-		if (blackboard.questionConcepts.size() < 1) {
-			App.log("Warning: unable to identify any question concepts in question " + blackboard.question.id);
-			Statistics.noQuestionConcepts++;
-			return DEFAULT_ANSWER;
-		}
+		if (!haveSufficientData(blackboard)) return DEFAULT_ANSWER;
 
-		if (blackboard.answers.size() == 0) {
-			App.log("Warning: unable to identify any answer concepts in question " + blackboard.question.id);
-			Statistics.noAnswerConcepts++;
-			return DEFAULT_ANSWER;
-		}
-
-		if (blackboard.answers.size() < 4) {
-			if (App.runOnce) System.out.println("Warning: only able to identify "+ blackboard.answers.size() + " answer concepts in question " + blackboard.question.id);
-			Statistics.incompleteAnswerOptions++;
-			// TODO where answer concepts <= 2, might want to use an alternative understanding algorithm, as some answers don't contain many nouns e.g. qId 2243
-		}
-
-		// STEP 3 - classify the question type
-		// TODO if we can classify questions, we might be able to choose a more specific type of query
+		// STEP 3 - classify the question type, so we can choose a more specific type of query
 		QuestionClassifier.classify(blackboard);
 
 		// STEP 4 - invoke most appropriate solving algorithm
@@ -80,7 +62,6 @@ public class ProblemSolver
 		{
 			// TODO lookup one-line definition of question concept and compare to options in the answers
 			// for now, these are currently answered by determining which answer has the most known concepts
-			// T 834 is a good example
 
 			boolean ok = scoreByDefinition(blackboard);
 			if (!ok) scoreByAnswerConcepts(blackboard);
@@ -163,6 +144,30 @@ public class ProblemSolver
 
 		// finally, return the answer A,B,C or D
 		return blackboard.getAnswer();
+	}
+
+
+	/** Quality control - to ensure we have sufficient data to answer questions */
+	public static boolean haveSufficientData(Blackboard blackboard)
+	{
+		if (blackboard.questionConcepts.size() < 1) {
+			App.log("Warning: unable to identify any question concepts in question " + blackboard.question.id);
+			Statistics.noQuestionConcepts++;
+			return false;
+		}
+
+		if (blackboard.answers.size() == 0) {
+			App.log("Warning: unable to identify any answer concepts in question " + blackboard.question.id);
+			Statistics.noAnswerConcepts++;
+			return false;
+		}
+
+		if (blackboard.answers.size() < 4) {
+			if (App.runOnce) System.out.println("Warning: only able to identify "+ blackboard.answers.size() + " answer concepts in question " + blackboard.question.id);
+			Statistics.incompleteAnswerOptions++;
+			// TODO where answer concepts <= 2, might want to use an alternative understanding algorithm, as some answers don't contain many nouns e.g. qId 2243
+		}
+		return true;
 	}
 
 
@@ -409,9 +414,7 @@ public class ProblemSolver
 			}
 		}
 
-		if (numbers == null) return false;
 		App.log("Numbers found in definition of question: " + numbers.toString());
-
 		boolean haveResult = false;
 		for (AnswerData answer : blackboard.answers)
 		{
